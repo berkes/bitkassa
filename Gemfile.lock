@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bitkassa (0.0.0)
+    bitkassa (0.0.2)
 
 GEM
   remote: https://rubygems.org/
