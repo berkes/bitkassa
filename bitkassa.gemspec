@@ -10,4 +10,5 @@
   s.license     = "MIT"
 
   s.add_development_dependency "rake"
+  s.add_development_dependency "minitest"
 end
