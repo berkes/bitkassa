@@ -8,4 +8,6 @@
   s.files       = ["lib/bitkassa.rb"]
   s.homepage    = "http://github.com/berkes/bitkassa"
   s.license     = "MIT"
+
+  s.add_development_dependency "rake"
 end
