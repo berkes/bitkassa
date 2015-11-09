@@ -1,7 +1,7 @@
 ﻿Gem::Specification.new do |s|
   s.name        = "bitkassa"
   s.version     = "0.0.1"
-  s.summary     = "Hola!"
+  s.summary     = "Bitkassa"
   s.description = "Ruby interface to the Bitkassa API"
   s.authors     = ["Bèr Kessels"]
   s.email       = "ber@berk.es"
