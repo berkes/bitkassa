@@ -49,6 +49,28 @@ describe Bitkassa::PaymentRequest do
       parsed = JSON.parse(subject.json_payload)
       parsed.must_equal(expected)
     end
+
+    it "allows description, return_url, update_url and meta_info args" do
+      bitkassa = Bitkassa::PaymentRequest.new(
+        "EUR", 1337,
+        description: "Description",
+        return_url: "http://example.com/return",
+        update_url: "http://example.com/update",
+        meta_info: "ORDERID42")
+
+      expected = {
+          "action" => "start_payment",
+          "merchant_id" => "banketbakkerhenk",
+          "currency" => "EUR",
+          "amount" => 1337,
+          "description" => "Description",
+          "return_url" => "http://example.com/return",
+          "update_url" => "http://example.com/update",
+          "meta_info" => "ORDERID42"}
+
+      parsed = JSON.parse(bitkassa.json_payload)
+      parsed.must_equal(expected)
+    end
   end
 
   describe "#authentication" do

@@ -1,9 +1,10 @@
 module Bitkassa
   class PaymentRequest
-    def initialize(currency, amount)
+    def initialize(currency, amount, optionals = {})
       @currency = currency
       @amount = amount
       @initialized_at = Time.now.to_i
+      assign_optionals(optionals)
     end
 
     def call
@@ -23,13 +24,23 @@ module Bitkassa
     end
 
     def json_payload
-      { action: "start_payment",
+      base = { action: "start_payment",
         merchant_id: Bitkassa.config.merchant_id,
         currency: @currency,
-        amount: @amount }.to_json
+        amount: @amount }
+
+      base.merge(@optionals).to_json
     end
 
     private
+
+    def assign_optionals(optionals)
+      @optionals = {}
+
+      [:description, :return_url, :update_url, :meta_info].each do |key|
+        @optionals[key] = optionals[key] if optionals.has_key?(key)
+      end
+    end
 
     def authentication_message
       "#{Bitkassa.config.secret_api_key}#{json_payload}#{@initialized_at}"
