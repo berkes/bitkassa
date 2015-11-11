@@ -1,3 +1,5 @@
+require "base64"
+
 module Bitkassa
   def self.config
     @config ||= Bitkassa::Config.new
