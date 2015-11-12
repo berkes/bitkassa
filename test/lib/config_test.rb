@@ -14,4 +14,10 @@ describe Bitkassa::Config do
       Bitkassa.config.merchant_id.must_equal "banketbakkerhenk"
     end
   end
+
+  describe "base_uri" do
+    it "defaults to api url" do
+      Bitkassa.config.base_uri.must_equal "https://www.bitkassa.nl/api/v1"
+    end
+  end
 end
