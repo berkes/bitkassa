@@ -1,4 +1,5 @@
 require "base64"
+require "httpi"
 
 module Bitkassa
   def self.config

@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     bitkassa (0.0.2)
+      httpi
 
 GEM
   remote: https://rubygems.org/
@@ -13,8 +14,11 @@ GEM
       safe_yaml (~> 1.0.0)
     docile (1.1.5)
     hashdiff (0.2.3)
+    httpi (2.4.1)
+      rack
     json (1.8.3)
     minitest (5.8.0)
+    rack (1.6.4)
     rake (10.4.2)
     safe_yaml (1.0.4)
     simplecov (0.10.0)
