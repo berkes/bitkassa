@@ -2,6 +2,7 @@ require "test_helper"
 
 describe Bitkassa::PaymentRequest do
   before do
+    Bitkassa.config.secret_api_key = "SECRET"
     Bitkassa.config.merchant_id = "banketbakkerhenk"
   end
 
@@ -13,14 +14,28 @@ describe Bitkassa::PaymentRequest do
     end.must_raise ArgumentError
   end
 
-  describe "#call" do
+  describe "#perform" do
     it "calls endpoint with payload and authentication" do
-      Base64.stub :encode64, "payload" do
-        subject.call
-      end
+      subject.perform
       assert_requested :post,
                        "https://www.bitkassa.nl/api/v1",
-                       body: "p=payload&a=authentication"
+                       body: "p=#{subject.payload}&a=#{subject.authentication}"
+    end
+
+    it "returns a Bitkassa::PaymentResponse initialized with response json" do
+      stubbed_request.to_return(body: "response_json")
+      expected = Bitkassa::PaymentResponse.new("response_json")
+      subject.perform.must_be_instance_of Bitkassa::PaymentResponse
+    end
+
+    it "does not perform when merchant_id is empty" do
+      Bitkassa.config.merchant_id = ""
+      proc { subject.perform }.must_raise Bitkassa::Exception
+    end
+
+    it "does not perform when secret_api_key is empty" do
+      Bitkassa.config.secret_api_key = ""
+      proc { subject.perform }.must_raise Bitkassa::Exception
     end
   end
 
