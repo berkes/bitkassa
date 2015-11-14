@@ -16,6 +16,7 @@ describe Bitkassa::PaymentRequest do
 
   describe "#perform" do
     it "calls endpoint with payload and authentication" do
+      subject.responder = MockPaymentRequest
       subject.perform
       assert_requested :post,
                        "https://www.bitkassa.nl/api/v1",
@@ -23,9 +24,10 @@ describe Bitkassa::PaymentRequest do
     end
 
     it "returns a Bitkassa::PaymentResponse initialized with response json" do
+      subject.responder = MockPaymentRequest
       stubbed_request.to_return(body: "response_json")
-      expected = Bitkassa::PaymentResponse.new("response_json")
-      subject.perform.must_be_instance_of Bitkassa::PaymentResponse
+      subject.perform
+      MockPaymentRequest.call_registry[:from_json].must_equal "response_json"
     end
 
     it "does not perform when merchant_id is empty" do
@@ -112,6 +114,22 @@ describe Bitkassa::PaymentRequest do
         addition = subject.authentication[64..-1]
         addition.must_equal 42.to_s
       end
+    end
+  end
+
+  ## Mocks
+  class MockPaymentRequest
+    def self.from_json(attributes)
+      @call_registry ||= {}
+      @call_registry[:from_json] = attributes
+    end
+
+    def self.call_registry
+      @call_registry
+    end
+
+    def self.reset
+      @call_registry = {}
     end
   end
 

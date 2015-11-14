@@ -1,5 +1,7 @@
 module Bitkassa
   class PaymentRequest
+    attr_writer :responder
+
     def initialize(currency, amount, optionals = {})
       @currency = currency
       @amount = amount
@@ -14,7 +16,7 @@ module Bitkassa
       end
 
       response = HTTPI.post(uri, params_string)
-      Bitkassa::PaymentResponse.new(response.body) unless response.error?
+      responder.from_json(response.body)
     end
 
     def payload
@@ -54,6 +56,10 @@ module Bitkassa
 
     def authentication_message
       "#{Bitkassa.config.secret_api_key}#{json_payload}#{@initialized_at}"
+    end
+
+    def responder
+      @responder ||= Bitkassa::PaymentResponse
     end
 
     def can_perform?
