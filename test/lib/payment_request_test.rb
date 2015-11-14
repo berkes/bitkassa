@@ -96,9 +96,10 @@ describe Bitkassa::PaymentRequest do
     # a = sha256( secret API key + json data + unixtime ) + unixtime
     it "is sha256 hash of api-key, payload and current unix time" do
       now = 42
-      message = "SECRET#{subject.json_payload}#{now.to_s}"
-      expected = Digest::SHA256.hexdigest(message)
       Time.stub :now, Time.at(now) do
+        message = "SECRET#{subject.json_payload}#{now.to_s}"
+        expected = Digest::SHA256.hexdigest(message)
+
         hash = subject.authentication[0...64]
         hash.must_equal expected
       end
@@ -117,6 +118,6 @@ describe Bitkassa::PaymentRequest do
   private
 
   def subject
-    Bitkassa::PaymentRequest.new("EUR", 1337)
+    @subject ||= Bitkassa::PaymentRequest.new("EUR", 1337)
   end
 end
