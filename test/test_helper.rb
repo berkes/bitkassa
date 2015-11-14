@@ -12,6 +12,10 @@ class Minitest::Spec
     stubbed_request
   end
 
+  after do
+    Bitkassa.config.debug = false
+  end
+
   protected
 
   def stubbed_request
