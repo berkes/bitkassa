@@ -10,13 +10,13 @@ module Bitkassa
     end
 
     def perform
-      if !can_perform?
+      if can_perform?
+        response = HTTPI.post(uri, params_string)
+        responder.from_json(response.body)
+      else
         fail Bitkassa::Exception,
              "Your merchant_id or merchant_key are not set"
       end
-
-      response = HTTPI.post(uri, params_string)
-      responder.from_json(response.body)
     end
 
     def payload
@@ -28,10 +28,12 @@ module Bitkassa
     end
 
     def json_payload
-      base = { action: "start_payment",
+      base = {
+        action: "start_payment",
         merchant_id: Bitkassa.config.merchant_id,
         currency: @currency,
-        amount: @amount }
+        amount: @amount
+      }
 
       base.merge(@optionals).to_json
     end
@@ -50,7 +52,7 @@ module Bitkassa
       @optionals = {}
 
       [:description, :return_url, :update_url, :meta_info].each do |key|
-        @optionals[key] = optionals[key] if optionals.has_key?(key)
+        @optionals[key] = optionals[key] if optionals.key?(key)
       end
     end
 
@@ -63,12 +65,15 @@ module Bitkassa
     end
 
     def can_perform?
-      !(Bitkassa.config.merchant_id.nil? || Bitkassa.config.merchant_id.empty?) &&
-        !(Bitkassa.config.secret_api_key.nil? || Bitkassa.config.secret_api_key.empty?)
+      return false if Bitkassa.config.merchant_id.nil?
+      return false if Bitkassa.config.merchant_id.empty?
+      return false if Bitkassa.config.secret_api_key.nil?
+      return false if Bitkassa.config.secret_api_key.empty?
+      true
     end
 
     def params_string
-      params.map { |k,v| [ k, '=', v ].join }.join('&')
+      params.map { |k, v| [k, "=", v].join }.join("&")
     end
   end
 end

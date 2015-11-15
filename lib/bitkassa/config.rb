@@ -4,7 +4,7 @@ module Bitkassa
                   :merchant_id,
                   :base_uri
 
-    attr_reader   :debug
+    attr_reader :debug
 
     def initialize
       @base_uri = "https://www.bitkassa.nl/api/v1"

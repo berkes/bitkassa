@@ -18,8 +18,8 @@ module Bitkassa
 
     def initialize(attributes)
       attributes.each do |key, value|
-        setter_method = "#{key.to_s}=".to_sym
-        self.send(setter_method, value)
+        setter_method = "#{key}=".to_sym
+        send(setter_method, value)
       end
     end
   end

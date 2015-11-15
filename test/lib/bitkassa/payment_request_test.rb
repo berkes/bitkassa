@@ -76,14 +76,15 @@ describe Bitkassa::PaymentRequest do
         meta_info: "ORDERID42")
 
       expected = {
-          "action" => "start_payment",
-          "merchant_id" => "banketbakkerhenk",
-          "currency" => "EUR",
-          "amount" => 1337,
-          "description" => "Description",
-          "return_url" => "http://example.com/return",
-          "update_url" => "http://example.com/update",
-          "meta_info" => "ORDERID42"}
+        "action" => "start_payment",
+        "merchant_id" => "banketbakkerhenk",
+        "currency" => "EUR",
+        "amount" => 1337,
+        "description" => "Description",
+        "return_url" => "http://example.com/return",
+        "update_url" => "http://example.com/update",
+        "meta_info" => "ORDERID42"
+      }
 
       parsed = JSON.parse(bitkassa.json_payload)
       parsed.must_equal(expected)
@@ -98,8 +99,8 @@ describe Bitkassa::PaymentRequest do
     # a = sha256( secret API key + json data + unixtime ) + unixtime
     it "is sha256 hash of api-key, payload and current unix time" do
       now = 42
-      Time.stub :now, Time.at(now) do
-        message = "SECRET#{subject.json_payload}#{now.to_s}"
+      Time.stub :now, Time.at(now).utc do
+        message = "SECRET#{subject.json_payload}#{now}"
         expected = Digest::SHA256.hexdigest(message)
 
         hash = subject.authentication[0...64]
@@ -110,7 +111,7 @@ describe Bitkassa::PaymentRequest do
     it "adds current unix time to hash" do
       now = 42
 
-      Time.stub :now, Time.at(now) do
+      Time.stub :now, Time.at(now).utc do
         addition = subject.authentication[64..-1]
         addition.must_equal 42.to_s
       end
@@ -119,17 +120,16 @@ describe Bitkassa::PaymentRequest do
 
   ## Mocks
   class MockPaymentRequest
-    def self.from_json(attributes)
-      @call_registry ||= {}
-      @call_registry[:from_json] = attributes
-    end
+    class << self
+      attr_reader :call_registry
+      def from_json(attributes)
+        @call_registry ||= {}
+        @call_registry[:from_json] = attributes
+      end
 
-    def self.call_registry
-      @call_registry
-    end
-
-    def self.reset
-      @call_registry = {}
+      def reset
+        @call_registry = {}
+      end
     end
   end
 
