@@ -8,6 +8,8 @@ CodeClimate::TestReporter.start
 require "bitkassa"
 
 class Minitest::Spec
+  WebMock.disable_net_connect!(allow: "codeclimate.com")
+
   before do
     stubbed_request
   end
