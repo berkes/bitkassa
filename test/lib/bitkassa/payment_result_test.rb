@@ -50,8 +50,12 @@ describe Bitkassa::PaymentResult do
       @payload = { payload: "data" }.to_json
     end
 
-    describe "with matching payload and matching secret_api_key" do
-      it { subject.valid?.must_equal true }
+    describe "with JSON payload and authentication set" do
+      it "requests authentication at Authentication class" do
+        Bitkassa::Authentication.stub :valid?, true do
+          subject.valid?.must_equal true
+        end
+      end
     end
 
     describe "with missing secret_api_key" do
@@ -66,19 +70,6 @@ describe Bitkassa::PaymentResult do
 
     describe "with missing authentication" do
       before { subject.raw_authentication = nil }
-      it { subject.valid?.must_equal false }
-    end
-
-    describe "with non-matching secret_api_key" do
-      before { @secret = "WRONG" }
-      it { subject.valid?.must_equal false }
-    end
-
-    describe "with non-matching payload" do
-      before do
-        subject.raw_payload = Base64.encode64({ payload: "wrong" }.to_json)
-      end
-
       it { subject.valid?.must_equal false }
     end
 

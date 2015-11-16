@@ -54,7 +54,7 @@ module Bitkassa
       return false if raw_authentication.nil? || raw_authentication.empty?
       return false unless json_valid?
 
-      raw_authentication == expected_authentication
+      Authentication.valid?(raw_authentication, json_payload)
     end
 
     private
@@ -65,16 +65,6 @@ module Bitkassa
 
     def json_payload
       Base64.decode64(raw_payload)
-    end
-
-    def expected_authentication
-      Digest::SHA256.hexdigest(
-        "#{Bitkassa.config.secret_api_key}#{json_payload}#{sent_at}"
-      ) + sent_at
-    end
-
-    def sent_at
-      raw_authentication[64..-1]
     end
 
     def json_valid?
