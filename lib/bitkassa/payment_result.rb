@@ -63,6 +63,7 @@ module Bitkassa
       @payload ||= JSON.parse(json_payload)
     end
 
+    # TODO: move de- and encoding of payload into own class
     def json_payload
       Base64.decode64(raw_payload)
     end

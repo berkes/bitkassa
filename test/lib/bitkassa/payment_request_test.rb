@@ -16,18 +16,35 @@ describe Bitkassa::PaymentRequest do
 
   describe "#perform" do
     it "calls endpoint with payload and authentication" do
-      subject.responder = MockPaymentRequest
-      subject.perform
+      Time.stub :now, Time.at(42).utc do
+        subject
+      end
+
+      authenticator = Minitest::Mock.new
+      authenticator.expect(:sign, "signature", [subject.json_payload, 42])
+      responder = Minitest::Mock.new
+      responder.expect(:from_json, nil, [""])
+
+      subject.authenticator = authenticator
+      subject.responder = responder
+      Base64.stub :urlsafe_encode64, "payload" do
+        subject.perform
+      end
       assert_requested :post,
                        "https://www.bitkassa.nl/api/v1",
-                       body: "p=#{subject.payload}&a=#{subject.authentication}"
+                       body: "p=payload&a=signature"
+      responder.verify
+      authenticator.verify
     end
 
     it "returns a Bitkassa::PaymentResponse initialized with response json" do
-      subject.responder = MockPaymentRequest
+      responder = Minitest::Mock.new
+      responder.expect(:from_json, nil, ["response_json"])
+      subject.responder = responder
+
       stubbed_request.to_return(body: "response_json")
       subject.perform
-      MockPaymentRequest.call_registry[:from_json].must_equal "response_json"
+      responder.verify
     end
 
     it "does not perform when merchant_id is empty" do
@@ -88,48 +105,6 @@ describe Bitkassa::PaymentRequest do
 
       parsed = JSON.parse(bitkassa.json_payload)
       parsed.must_equal(expected)
-    end
-  end
-
-  describe "#authentication" do
-    before do
-      Bitkassa.config.secret_api_key = "SECRET"
-    end
-
-    # a = sha256( secret API key + json data + unixtime ) + unixtime
-    it "is sha256 hash of api-key, payload and current unix time" do
-      now = 42
-      Time.stub :now, Time.at(now).utc do
-        message = "SECRET#{subject.json_payload}#{now}"
-        expected = Digest::SHA256.hexdigest(message)
-
-        hash = subject.authentication[0...64]
-        hash.must_equal expected
-      end
-    end
-
-    it "adds current unix time to hash" do
-      now = 42
-
-      Time.stub :now, Time.at(now).utc do
-        addition = subject.authentication[64..-1]
-        addition.must_equal 42.to_s
-      end
-    end
-  end
-
-  ## Mocks
-  class MockPaymentRequest
-    class << self
-      attr_reader :call_registry
-      def from_json(attributes)
-        @call_registry ||= {}
-        @call_registry[:from_json] = attributes
-      end
-
-      def reset
-        @call_registry = {}
-      end
     end
   end
 
