@@ -9,6 +9,9 @@
   s.homepage    = "http://github.com/berkes/bitkassa"
   s.license     = "MIT"
 
+  s.add_dependency "httpi"
+
   s.add_development_dependency "rake"
   s.add_development_dependency "minitest"
+  s.add_development_dependency "webmock"
 end
