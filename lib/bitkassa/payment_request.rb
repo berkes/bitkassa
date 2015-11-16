@@ -20,7 +20,7 @@ module Bitkassa
     end
 
     def payload
-      Base64.encode64(json_payload)
+      Base64.urlsafe_encode64(json_payload)
     end
 
     def authentication
