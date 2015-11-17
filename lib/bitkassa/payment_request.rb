@@ -7,10 +7,12 @@ module Bitkassa
   # payment and an authentication message, being a signed version of the
   # payload.
   class PaymentRequest
-    ##
     # Override the class that is initialized to capture the +perform+ response.
     # Defaults to +Bitkassa::PaymentResponse+.
     attr_writer :responder
+    # Overrides the default +Bitkassa::Authentication+ to sign the
+    # authentication
+    attr_writer :authenticator
 
     ##
     # Initialize a +PaymentRequest+.
@@ -50,12 +52,6 @@ module Bitkassa
     end
 
     ##
-    # returns the authentication message as string.
-    def authentication
-      Digest::SHA256.hexdigest(authentication_message) + @initialized_at.to_s
-    end
-
-    ##
     # returns JSON representation of the payload as string.
     def json_payload
       base = {
@@ -86,12 +82,8 @@ module Bitkassa
       end
     end
 
-    def authentication_message
-      "#{Bitkassa.config.secret_api_key}#{json_payload}#{@initialized_at}"
-    end
-
-    def responder
-      @responder ||= Bitkassa::PaymentResponse
+    def authentication
+      authenticator.sign(json_payload, @initialized_at)
     end
 
     def can_perform?
@@ -104,6 +96,14 @@ module Bitkassa
 
     def params_string
       params.map { |k, v| [k, "=", v].join }.join("&")
+    end
+
+    def responder
+      @responder ||= Bitkassa::PaymentResponse
+    end
+
+    def authenticator
+      @authenticator ||= Authentication
     end
   end
 end
