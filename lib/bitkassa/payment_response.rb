@@ -26,14 +26,14 @@ module Bitkassa
     # * +payment_id+, Unique ID assigned to this payment by Bitkassa
     # * +payment_url+, The Bitcoin payment URL which you can show (as link
     #   and/or QR) for the customer to pay from his wallet (if you're hosting
-    #   your own payment page) 
+    #   your own payment page)
     # * +address+ The Bitcoin address where the customer is supposed to send
     #   his payment.
     # * +amount+, The amount in satoshis to be paid.
-    # * +expire+, Unix timestamp when the payment expires (typically 15 
+    # * +expire+, Unix timestamp when the payment expires (typically 15
     #   minutes after start)
     # * +error+, Reason why the payment could not be initiated. Only set when
-    #   payment errord. 
+    #   payment errord.
     # * +success+, Confirmation that the API call was processed successfull
     def initialize(attributes)
       attributes.each do |key, value|
