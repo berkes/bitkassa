@@ -6,104 +6,46 @@ module Bitkassa
   # A payment-request consists of a payload containing the information for the
   # payment and an authentication message, being a signed version of the
   # payload.
-  class PaymentRequest
-    # Override the class that is initialized to capture the +perform+ response.
-    # Defaults to +Bitkassa::PaymentResponse+.
-    attr_writer :responder
-    # Overrides the default +Bitkassa::Authentication+ to sign the
-    # authentication
-    attr_writer :authenticator
-
+  class PaymentRequest < Request
+    attr_accessor :currency,
+                  :amount,
+                  :description,
+                  :return_url,
+                  :update_url,
+                  :meta_info
     ##
-    # Initialize a +PaymentRequest+.
+    # Attributes for the payload
     #
-    # * +currency+ +String+ "EUR" or "BTC"
-    # * +amount+ +Integer+ amount to be paid in cents or satoshis
-    # * +optionals+ +Hash+, description, return_url, update_url and meta_info
-    def initialize(currency, amount, optionals = {})
-      @currency = currency
-      @amount = amount
-      @initialized_at = Time.now.to_i
-      assign_optionals(optionals)
-    end
-
-    ##
-    # Make the request.
-    #
-    # returns +Bitkassa::PaymentResponse+ Regardless of the response, this
-    # this PaymentResponse is initialized.
-    #
-    # When a payment cannot be made because of incorrect or missing data,
-    # a +Bitkassa::Exception+ is raised.
-    def perform
-      if can_perform?
-        response = HTTPI.post(uri, params_string)
-        responder.from_json(response.body)
-      else
-        fail Bitkassa::Exception,
-             "Your merchant_id or merchant_key are not set"
-      end
-    end
-
-    ##
-    # returns the +base_64+ encoded JSON as string.
-    def payload
-      Base64.urlsafe_encode64(json_payload)
-    end
-
-    ##
-    # returns JSON representation of the payload as string.
-    def json_payload
-      base = {
-        action: "start_payment",
-        merchant_id: Bitkassa.config.merchant_id,
+    # * +attributes+ +Hash+:
+    # ** +currency+ +String+ required. "EUR" or "BTC"
+    # ** +amount+ +Integer+ required, amount to be paid in cents or satoshis
+    # ** +description+,
+    # ** +return_url+,
+    # ** +update_url+,
+    # ** +meta_info+
+    def attributes
+      {
         currency: @currency,
-        amount: @amount
+        amount: @amount,
+        description: @description,
+        return_url: @return_url,
+        update_url: @update_url,
+        meta_info: @meta_info
       }
-
-      base.merge(@optionals).to_json
     end
 
-    private
-
-    def uri
-      Bitkassa.config.base_uri
-    end
-
-    def params
-      { p: payload, a: authentication }
-    end
-
-    def assign_optionals(optionals)
-      @optionals = {}
-
-      [:description, :return_url, :update_url, :meta_info].each do |key|
-        @optionals[key] = optionals[key] if optionals.key?(key)
-      end
-    end
-
-    def authentication
-      authenticator.sign(json_payload, @initialized_at)
-    end
-
+    ##
+    # Override can_perform the require "currency" and "amount"
     def can_perform?
-      return false if Bitkassa.config.merchant_id.nil?
-      return false if Bitkassa.config.merchant_id.empty?
-      return false if Bitkassa.config.secret_api_key.nil?
-      return false if Bitkassa.config.secret_api_key.empty?
-      true
+      return false if currency.nil?
+      return false if amount.nil?
+      super
     end
 
-    def params_string
-      params.map { |k, v| [k, "=", v].join }.join("&")
-    end
-
-    def responder
-      @responder ||= Bitkassa::PaymentResponse
-    end
-
-    def authenticator
-      @authenticator ||= Authentication
+    ##
+    # Payload action is "start_payment"
+    def payload_action
+      "start_payment"
     end
   end
 end
