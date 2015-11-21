@@ -54,7 +54,6 @@ describe Bitkassa::Request do
       it { subject.can_perform?.must_equal false }
     end
 
-
     describe "when secret_api_key is empty" do
       before { Bitkassa.config.secret_api_key = "" }
       it { subject.can_perform?.must_equal false }
