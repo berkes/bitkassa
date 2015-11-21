@@ -14,12 +14,5 @@ module Bitkassa
       sent_at = signature[64..-1]
       signature == sign(payload, sent_at)
     end
-
-    private
-
-    def sent_at_from_message
-      return unless @message
-      @message[64..-1]
-    end
   end
 end

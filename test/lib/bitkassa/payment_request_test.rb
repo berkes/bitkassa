@@ -36,6 +36,14 @@ describe Bitkassa::PaymentRequest do
       before { subject.amount = nil }
       it { subject.can_perform?.must_equal false }
     end
+
+    describe "when currency and amount are set" do
+      before do
+        subject.amount = 1337
+        subject.currency = "EUR"
+      end
+      it { subject.can_perform?.must_equal true }
+    end
   end
 
   private

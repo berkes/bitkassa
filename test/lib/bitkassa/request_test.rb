@@ -60,6 +60,12 @@ describe Bitkassa::Request do
     end
   end
 
+  describe "#attributes" do
+    it "is an empty hash" do
+      subject.attributes.must_equal({})
+    end
+  end
+
   private
 
   def subject
