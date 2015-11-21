@@ -1,9 +1,10 @@
+require "codeclimate-test-reporter"
+SimpleCov.start if ENV["COVERAGE"]
+CodeClimate::TestReporter.start
+
 require "minitest/spec"
 require "minitest/autorun"
 require "webmock/minitest"
-
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
 
 require "bitkassa"
 

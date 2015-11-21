@@ -26,6 +26,10 @@ describe Bitkassa::StatusRequest do
       before { subject.payment_id = nil }
       it { subject.can_perform?.must_equal false }
     end
+    describe "when paymen_id is set" do
+      before { subject.payment_id = "dhqe4cnj7f" }
+      it { subject.can_perform?.must_equal true }
+    end
   end
 
   private
