@@ -1,6 +1,6 @@
 ﻿Gem::Specification.new do |s|
   s.name        = "bitkassa"
-  s.version     = "0.0.2"
+  s.version     = "0.1.2"
   s.summary     = "Bitkassa"
   s.description = "Ruby interface to the Bitkassa API"
   s.authors     = ["Bèr Kessels"]
