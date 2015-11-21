@@ -7,6 +7,7 @@
   s.email       = "ber@berk.es"
   s.files       = ["lib/bitkassa.rb"]
   s.homepage    = "http://github.com/berkes/bitkassa"
+  s.required_ruby_version = ">= 2.0"
   s.license     = "MIT"
 
   s.add_dependency "httpi", "~> 2.4"
