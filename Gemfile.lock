@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    bitkassa (0.0.2)
-      httpi
+    bitkassa (0.1.2)
+      httpi (~> 2.4)
 
 GEM
   remote: https://rubygems.org/
@@ -55,7 +55,7 @@ PLATFORMS
 DEPENDENCIES
   bitkassa!
   codeclimate-test-reporter
-  minitest
-  rake
-  rubocop-git
-  webmock
+  minitest (~> 5.8)
+  rake (~> 10.4)
+  rubocop-git (~> 0.0)
+  webmock (~> 1.22)
